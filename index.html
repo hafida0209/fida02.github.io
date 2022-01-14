@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>WebGIS</title>
+    <title>Housing Plan Suitability</title>
     <link rel="stylesheet" href="library/leaflet/leaflet.css" />
     <link rel="stylesheet" href="css/style.css" />
     <script src="library/leaflet/leaflet.js"></script>
@@ -13,49 +13,52 @@
 <body>
     <div id="map">
         <script>
-            var map = L.map('map').setView([-6.974277, 110.410620], 13);
+            var map = L.map('map').setView([-7.264742, 111.517021], 14);
 
             var baseLayers = {
-                'Esri.WorldTopoMap': L.tileLayer.provider('Esri.WorldTopoMap'),
+                'Esri WorldTopoMap': L.tileLayer.provider('Esri.WorldTopoMap'),
                 'Esri WorldImagery': L.tileLayer.provider('Esri.WorldImagery').addTo(map),
                 'OSM Default': L.tileLayer.provider('OpenStreetMap.DE'),
                 'OSM France': L.tileLayer.provider('OpenStreetMap.France')
             };
 
 
-            /* Memanggil Layer Rawan Banjir */
-            var AreaRawanBanjir = L.geoJson(null, {
+            /* Memanggil Layer geo hous */
+            var geohous = L.geoJson(null, {
                 style: function(feature) {
                     return {
                         color: "black",
-                        fillColor: KlasBanjir[feature.properties.Klas_Rawan],
+                        fillColor: KlasPer[feature.properties.Klas_Per],
                         weight: 0.3,
                         opacity: 0,
-                        fillOpacity: 0.5
+                        fillOpacity: 0.7
                     };
                 },
+
+                /*Tampilan HTML Pop UP*/
+
                 onEachFeature: function( feature, layer ){
                     layer.bindPopup(
-                        "Klas Rawan Bajir : " + "<left>" + feature.properties.Klas_Rawan + "</left>" + "<br>" +
+                        "Klas Kesesuaian : " + "<left>" + feature.properties.Klas_Per + "</left>" + "<br>" +
                         "Luas :" + "<left>" + feature.properties.Shape_Area + "</left>" + " m2"
                         )
                 }
             });
-            $.getJSON("data/Rawan_Banjir_Semarang_Geo.json", function(data) {
-                AreaRawanBanjir.addData(data);
+            $.getJSON("data/geo_hous_plann.json", function(data) {
+                geohous.addData(data);
             });
 
-			/* Merubah Tampilan Warna Berdasar Atribut Klas Banjir */
-			var KlasBanjir = {
-				"Aman":"#d3f0f2",
-				"Cukup Aman":"#9bd1e8",
-				"Agak Rawan":"#6c76cc",
-				"Rawan":"#1326d1",
-				"Sangat Rawan":"#0b0a5c"
+			/* Merubah Tampilan Warna Berdasar Atribut Klas Per */
+			var KlasPer = {
+				"Sangat Tidak Sesuai":"#d3f0f2",
+				"Tidak Sesuai":"#9bd1e8",
+				"Kurang Sesuai":"#6c76cc",
+				"Cukup Rekomendsi":"#1326d1",
+				"Sangat Rekomendsi":"#0b0a5c"
 			};
 
             var mapLayers = {
-                'Area Rawan Banjir': AreaRawanBanjir
+                'Kesesuaian Rencana Perumahan': geohous
             };
 
             L.control.layers(baseLayers, mapLayers).addTo(map);
